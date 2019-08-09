@@ -236,7 +236,7 @@ class Bot extends Component {
                         respText += elData + '\r\n\n';
                     });
                 }else{
-                    respText += res.data.result.fulfillment.messages[i].speech + '\r\n\n';
+                    respText += res.data.result.fulfillment.messages[i].speech;
                 }
             }
             else{
