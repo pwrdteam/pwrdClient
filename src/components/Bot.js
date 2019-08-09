@@ -132,26 +132,26 @@ class Bot extends Component {
 
     readOutLoud(message) {
   try {
-      // var speech = new SpeechSynthesisUtterance();
+      var speech = new SpeechSynthesisUtterance();
 
-      // //Set the text and voice attributes.Text can be maximum 32767 characters.
-      // speech.text = message;
+      //Set the text and voice attributes.Text can be maximum 32767 characters.
+      speech.text = message;
       
-      // //sets the volume, accepts between [0 - 1], defaults to 1
-      // speech.volume = 1;
+      //sets the volume, accepts between [0 - 1], defaults to 1
+      speech.volume = 1;
       
-      // //set the speed, accepts between [0.1 - 10], defaults to 1
-      // speech.rate = 1;
+      //set the speed, accepts between [0.1 - 10], defaults to 1
+      speech.rate = 1;
       
-      // //set the pitch, accepts between [0 - 2], defaults to 1
-      // speech.pitch = 1;
+      //set the pitch, accepts between [0 - 2], defaults to 1
+      speech.pitch = 1.5;
       
-      // //Values for the language
-      // speech.lang = 'en-US'
-      // //speech.lang = 'hi-IN'
+      //Values for the language
+      speech.lang = 'en-US'
+      //speech.lang = 'hi-IN'
     
-      // window.speechSynthesis.speak(speech);
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(message));
+      window.speechSynthesis.speak(speech);
+      ////window.speechSynthesis.speak(new SpeechSynthesisUtterance(message));
       
   }
   catch(error) {
