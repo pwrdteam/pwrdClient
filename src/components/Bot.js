@@ -78,15 +78,20 @@ class Bot extends Component {
 
 
 	startRecognition() {
-        if (!!this.state.recognizer) {
-            this.state.recognizer.start();
-            this.state.isRecording = true;
-            this.updateRec();
-      }
-      else{
-          alert('Voice mic input is not supported in this version or browser,try with different version or browser.');
-          console.log("Voice mic input is not available.");
-      }
+        try {
+            if (!!this.state.recognizer) {
+                this.state.recognizer.start();
+                this.state.isRecording = true;
+                this.updateRec();
+          }
+          else{
+              alert('Voice mic input is not supported in this version or browser,try with different version or browser.');
+              console.log("Voice mic input is not available.");
+          }
+        } catch (e) {
+            alert('Voice mic input is not supported in this version or browser,try with different version or browser.');
+            console.log("Voice mic input is not available. Error: "+e);
+        }
     }
   
     stopRecognition() {
@@ -144,7 +149,7 @@ class Bot extends Component {
       speech.rate = 1;
       
       //set the pitch, accepts between [0 - 2], defaults to 1
-      speech.pitch = 1.5;
+      speech.pitch = 1;
       
       //Values for the language
       speech.lang = 'en-US'
@@ -157,70 +162,33 @@ class Bot extends Component {
   catch(error) {
     console.error('SpeechSynthesisUtterance error',error);
   }
-    }
+}
 
     send() {
     let text = document.getElementById('input').value;
     if(!text) return;
     let taResponse = document.getElementById('response');
     let body = document.getElementsByTagName('body')[0];
-    document.getElementById('input').value='';
-    
+    document.getElementById('input').value='';    
     
     this.setState((state, props) => ({
         ...state,
         ...state.conversation.push("Sender: " + text + '\r\n')
     }));
+    // taResponse.value = this.state.conversation.join();
     let url = cons.baseUrl + "query?v=20150910",
     reqData = JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" });
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': "Bearer " + cons.accessToken
-      }
-
-    let serverUrl = "http://172.20.3.205:5000/send-msg";
-    
-    // sendData.append(["MSG",text],["MSG",text]);
-    // console.log("pair",sendData);
-    // for(const pair of new FormData(document.getElementById("mymsg"))){
-    //     sendData.append(pair[0],pair[1]);
-    //     console.log("pair",pair);
-    // }
-
-    // const data = new URLSearchParams();
-    // for (const pair of new FormData(document.getElementById("mymsg"))) {
-    //     data.append(pair[0], pair[1]);
-    //     console.log(pair)
-    // }  
-    // fetch(serverUrl, {
-    //   method: 'POST',
-    //   body:data
-    // })
-    // .then(res => res.json())
-    // .then(res => {
-    //     //res.json()
-    //     console.log('res',res);
-    //     document.getElementById('input').value = '';
-    //     var respText = res.Reply;
-    //     if(!respText){            
-    //         respText = 'Please try again.';
-    //     }
-    //     this.setcommonResponse(respText);
-    //     this.readOutLoud(respText);
-    //     //generateBanner(data);
-    //     taResponse.scrollTop = taResponse.scrollHeight;
-    //     body.scrollTop = body.scrollHeight;
-    // })
-    // .catch(error => console.error('Error in fetch:', error));
-        
+      }        
       axios.post(url, reqData, {
       headers: headers
       })
       .then((res) => {
           console.log('res',res);
-          debugger;
           var respText = '';
-            if(res.data.result.fulfillment.messages.length>0)
+            if(res.data.result.fulfillment.messages.length > 0)
             for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
                 if(this.IsValidJSONString(res.data.result.fulfillment.messages[i].speech)){
                     let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);                    
@@ -236,22 +204,17 @@ class Bot extends Component {
                         respText += elData + '\r\n\n';
                     });
                 }else{
-                    respText += res.data.result.fulfillment.messages[i].speech;
+                    if (res.data.result.fulfillment.speech === res.data.result.fulfillment.messages[i].speech) {                        
+                        respText += res.data.result.fulfillment.messages[i].speech;
+                    }
+                    else{
+                        respText += res.data.result.fulfillment.messages[i].speech+ '\r\n';
+                    }
                 }
             }
             else{
                 var respText = !res.data.result.fulfillment.speech?'Please try again.':res.data.result.fulfillment.speech;                
             }
-        //   var respText = res.data.result.fulfillment.speech;
-        //   if(!respText){
-        //       if(res.data.result.fulfillment.messages.length>0)
-        //       for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
-        //           respText += res.data.result.fulfillment.messages[i].speech + '\r\n\n';
-        //       }
-        //       else{
-        //           respText = 'Please try again.';
-        //       }
-        //   }
           this.setcommonResponse(respText);
           this.readOutLoud(respText);
           taResponse.scrollTop = taResponse.scrollHeight;
@@ -274,24 +237,24 @@ class Bot extends Component {
     }
 
     setcommonResponse(val) {
-    let responseElement = document.getElementById('response');
-    this.setState((state, props) => ({
-        ...state,
-        ...state.conversation.push("Receiver: " + val + '\r\n\n')
-    }));
-    responseElement.value = this.state.conversation.join("");
+        let responseElement = document.getElementById('response');
+        this.setState((state, props) => ({
+            ...state,
+            ...state.conversation.push("Receiver: " + val + '\r\n\n')
+        }));
+        responseElement.value = this.state.conversation.join("");
     }
 
     showHide(e){
-    e.preventDefault();
-    let chatbotElement = document.getElementById('chatbot');
-    let currTransform = getComputedStyle(chatbotElement).transform;
-    if(currTransform === "matrix(1, 0, 0, 1, 0, -5.25)"){
-        chatbotElement.style.transform="translateY(94%)";
-    }
-    else{
-        chatbotElement.style.transform="translateY(-1%)";
-    }
+        e.preventDefault();
+        let chatbotElement = document.getElementById('chatbot');
+        let currTransform = getComputedStyle(chatbotElement).transform;
+        if(currTransform === "matrix(1, 0, 0, 1, 0, -5.25)"){
+            chatbotElement.style.transform="translateY(94%)";
+        }
+        else{
+            chatbotElement.style.transform="translateY(-1%)";
+        }
     }
 
     render() {
