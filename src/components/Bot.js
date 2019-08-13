@@ -191,7 +191,8 @@ class Bot extends Component {
             if(res.data.result.fulfillment.messages.length > 0){
                 for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
                     if(this.IsValidJSONString(res.data.result.fulfillment.messages[i].speech)){
-                        let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);                    
+                        let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);
+                        respText += res.data.result.fulfillment.speech + '\r\n';
                         jsonResult.filter((el)=> {
                             let elData='';
                             delete el.attributes;
@@ -201,7 +202,6 @@ class Bot extends Component {
                                 }
                             }
                             elData = elData.substr(0,elData.length-2);
-                            respText += res.data.result.fulfillment.speech + '\r\n';
                             respText += elData + '\r\n\n';
                         });
                     }else if (res.data.result.fulfillment.speech === res.data.result.fulfillment.messages[i].speech) {
