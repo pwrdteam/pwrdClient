@@ -169,7 +169,7 @@ class Bot extends Component {
     if(!text) return;
     let taResponse = document.getElementById('response');
     let body = document.getElementsByTagName('body')[0];
-    document.getElementById('input').value='';    
+    document.getElementById('input').value='';
     
     this.setState((state, props) => ({
         ...state,
@@ -188,28 +188,28 @@ class Bot extends Component {
       .then((res) => {
           console.log('res',res);
           var respText = '';
-            if(res.data.result.fulfillment.messages.length > 0)
-            for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
-                if(this.IsValidJSONString(res.data.result.fulfillment.messages[i].speech)){
-                    let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);                    
-                    jsonResult.filter((el)=> {
-                        let elData='';
-                        delete el.attributes;
-                        for (var k in el) {
-                        if (el.hasOwnProperty(k)) {
-                            elData += `${k}: ${el[k]}, `;
-                        }
-                        }
-                        elData = elData.substr(0,elData.length-2);
-                        respText += elData + '\r\n\n';
-                    });
-                }else{
-                    if (res.data.result.fulfillment.speech === res.data.result.fulfillment.messages[i].speech) {                        
+            if(res.data.result.fulfillment.messages.length > 0){
+                for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
+                    if(this.IsValidJSONString(res.data.result.fulfillment.messages[i].speech)){
+                        let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);                    
+                        jsonResult.filter((el)=> {
+                            let elData='';
+                            delete el.attributes;
+                            for (var k in el) {
+                                if (el.hasOwnProperty(k)) {
+                                    elData += `${k}: ${el[k]}, `;
+                                }
+                            }
+                            elData = elData.substr(0,elData.length-2);
+                            respText += res.data.result.fulfillment.speech + '\r\n';
+                            respText += elData + '\r\n\n';
+                        });
+                    }else if (res.data.result.fulfillment.speech === res.data.result.fulfillment.messages[i].speech) {
                         respText += res.data.result.fulfillment.messages[i].speech;
                     }
                     else{
-                        respText += res.data.result.fulfillment.messages[i].speech+ '\r\n';
-                    }
+                        respText += res.data.result.fulfillment.messages[i].speech + '\r\n';
+                    }                    
                 }
             }
             else{
