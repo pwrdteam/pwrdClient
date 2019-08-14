@@ -24,7 +24,7 @@ i.white{
 #chatbot{
     min-width: 20%;
     right: 0.2rem;
-    transform: translateY(-1%);
+    transform: translateY(1%);
     transition: all ease .4s;
     -webkit-animation: zoom-in 0.5s;
     animation: zoom-in 0.5s;
@@ -53,6 +53,65 @@ i.white{
 }
 #usr-inpt input#input{
     padding-right:12%;
+}
+#response{
+    margin-top:1%;
+    padding:2% 1%;
+    height:80vh;
+    overflow-y: scroll;
+    /* display: flex; */
+
+    background-color: rgba(255, 193, 7, 0.11);
+}
+.ConvMe{
+text-align:right;
+width:auto;
+position: relative;
+}
+.ConvCB{
+    text-align: left;
+    margin: 0;
+    width: auto;
+    padding: 1%;
+    position: relative;
+    padding-left: 3%;
+    display: flex;  
+    
+}
+
+.ConvMe span{   
+    border-radius: 10px;
+    margin: 0;
+    padding: 1%;
+    background-color: transparent;
+    border: 1px solid skyblue;
+    font-size:1rem;
+    position: relative;
+}
+.ConvCB p{
+    background-color: #8bcdd82e;
+    border-radius: 10px;
+    margin-top: 1%;
+    margin-left: 1rem;
+    padding: 1%;
+    font-size:1rem;
+    border: 1px solid #91d091;
+    line-height: 0.5rem;
+    text-align: justify;
+    position: relative;
+    line-height: 23px;
+}
+
+.ConvCB:before{
+    content: '';
+    position: absolute;
+    background: url(https://www.ometrics.com/blog/wp-content/uploads/2018/04/chatbot-icon-250.png) no-repeat;
+    width: 50px;
+    height: 50px;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    background-size: contain;
 }
 textarea#response{
     overflow-y: scroll;

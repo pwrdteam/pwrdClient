@@ -25,6 +25,8 @@ class Bot extends Component {
     this.state = {
         isRecording: false,
         conversation: [],
+        conversationMe: [],
+        conversationChatBot: [],
         recognizer: new window.webkitSpeechRecognition()
     };
     
@@ -36,6 +38,11 @@ class Bot extends Component {
 
     componentDidMount() {
         this.initializeRecognition();
+        setTimeout(() => {
+            // this.setcommonResponse("Hello I am Customer support Bot, type hi and i will respond you.","ChatBot");
+            this.setcommonResponse("🙂 Hello.. How May I Help You.","ChatBot");
+        }, 2000);
+        //this.setcommonResponse("hello i am customer support bot type hi and i will respond you.","ChatBot");
         //console.log('componentDidMount');
     }
     
@@ -174,8 +181,15 @@ class Bot extends Component {
     this.setState((state, props) => ({
         ...state,
         ...state.conversation.push("Sender: " + text + '\r\n')
+        ,...state.conversationMe.push("Sender: " + text + '\r\n')
     }));
-    // taResponse.value = this.state.conversation.join();
+    // // taResponse.value = this.state.conversation.join();    
+    // let div = document.createElement('div');
+    // div.className = "ConvMe";
+    // div.innerHTML = `<span><strong>Me: </strong> ${text}</span>`;
+    // taResponse.appendChild(div);
+    this.setcommonResponse(text,"Me");
+
     let url = cons.baseUrl + "query?v=20150910",
     reqData = JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" });
     const headers = {
@@ -215,7 +229,7 @@ class Bot extends Component {
             else{
                 var respText = !res.data.result.fulfillment.speech?'Please try again.':res.data.result.fulfillment.speech;                
             }
-          this.setcommonResponse(respText);
+          this.setcommonResponse(respText,"ChatBot");
           this.readOutLoud(respText);
           taResponse.scrollTop = taResponse.scrollHeight;
           body.scrollTop = body.scrollHeight;
@@ -236,14 +250,26 @@ class Bot extends Component {
         return true;
     }
 
-    setcommonResponse(val) {
+    setcommonResponse(val,from) {
         let responseElement = document.getElementById('response');
-        this.setState((state, props) => ({
-            ...state,
-            ...state.conversation.push("Receiver: " + val + '\r\n\n')
-        }));
-        responseElement.value = this.state.conversation.join("");
+        let div = document.createElement('div');
+        div.className = from==="Me" ? "ConvMe" : "ConvCB";
+        div.innerHTML = from==="Me" ? `<span>${val}</span>` : `<p>${val}</p>`;
+        //div.innerHTML = `<span><strong></strong> ${val}</span>`;
+        responseElement.appendChild(div);
     }
+    // setcommonResponse(val) {
+    //     let responseElement = document.getElementById('response');
+    //     let div = document.createElement('div');
+    //     div.className = "ConvCB";
+    //     div.innerHTML = `<span><strong>ChatBot: </strong> ${val}</span>`;
+    //     this.setState((state, props) => ({
+    //         ...state,
+    //         ...state.conversation.push("Receiver: " + val + '\r\n\n')
+    //         ,...state.conversationChatBot.push("Receiver: " + val + '\r\n\n')
+    //     }));
+    //     responseElement.appendChild(div);
+    // }
 
     showHide(e){
         e.preventDefault();
@@ -260,29 +286,17 @@ class Bot extends Component {
     render() {
         return (
             <React.Fragment>
-
-	<div className="container-fluid">
-    <header>
-        <div className="row">
-        <div className="col-md-12 text-center">
-        <img src={require('../css/images/LTLogo.png')} alt="L&T" width="25%"></img>
-        </div>
-        </div>
-    </header>
-
-    <div className="row">
-        <div className="col-md-12">
-        </div>
-    </div>
-    
-    <div id="chatbot" className="fixed-right-bottom">
-        <div  className="pull-right rounded border border-info">
-            <div className="subheading" onClick={this.showHide}><h3>L&T</h3></div>
+  
+    {/* fixed-right-bottom 
+    pull-right*/}
+    <div id="chatbot" className="col-md-12 fixed-right-top">
+        <div  className="rounded border border-info">
+            <div className="subheading" onClick={this.showHide}><h3>L&T Realty</h3></div>
             <div className="col-md-12">
                 
                <div className="form-group">
-                 <label htmlFor="response">Chatbot:</label>
-                <textarea readOnly className="form-control" id="response" cols="40" rows="15" ></textarea>
+                 {/* <label htmlFor="response">Chatbot:</label> */}
+                <div readOnly className="form-control" id="response" cols="40" rows="15" ></div>
                 </div>
             </div>
             <hr/>            
@@ -302,7 +316,6 @@ class Bot extends Component {
         </div>
     </div>
 
-</div>
 </React.Fragment>
 
         )
