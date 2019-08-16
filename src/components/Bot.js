@@ -206,7 +206,9 @@ class Bot extends Component {
                 for(let i=0;i<=res.data.result.fulfillment.messages.length-1;i++){
                     if(this.IsValidJSONString(res.data.result.fulfillment.messages[i].speech)){
                         let jsonResult = JSON.parse(res.data.result.fulfillment.messages[i].speech);
-                        respText += res.data.result.fulfillment.speech + '\r\n';
+                        if (!this.IsValidJSONString(res.data.result.fulfillment.speech)) {
+                            respText += res.data.result.fulfillment.speech + '\r\n';                            
+                        }
                         jsonResult.filter((el)=> {
                             let elData='';
                             delete el.attributes;
@@ -215,13 +217,13 @@ class Bot extends Component {
                                     elData += `${k}: ${el[k]}, `;
                                 }
                             }
-                            this.setState((state, props) => ({
-                                ...state,
-                                ...state.isHappyMsgCnt++
-                            }));
                             elData = elData.substr(0,elData.length-2);
                             respText += elData + '\r\n\n';
                         });
+                        // this.setState((state, props) => ({
+                        //     ...state,
+                        //     ...state.isHappyMsgCnt++
+                        // }));
                     }else if (res.data.result.fulfillment.speech === res.data.result.fulfillment.messages[i].speech) {
                         respText += res.data.result.fulfillment.messages[i].speech;
                     }
@@ -235,16 +237,16 @@ class Bot extends Component {
             }
             this.setcommonResponse(respText,"ChatBot");
             this.readOutLoud(respText);
-            let MsgCnt = this.state.isHappyMsgCnt;
-            if (MsgCnt != 0) {
-                let isTrue = MsgCnt%4==0;
-                if (isTrue) {
-                    this.setcommonResponse("Happy to help you.🙂","ChatBot");
-                    this.readOutLoud("Happy to help you.");
-                }
-            }
             taResponse.scrollTop = taResponse.scrollHeight;
             body.scrollTop = body.scrollHeight;
+            // let MsgCnt = this.state.isHappyMsgCnt;
+            // if (MsgCnt != 0) {
+            //     let isTrue = MsgCnt%4==0;
+            //     if (isTrue) {
+            //         this.setcommonResponse("Happy to help you.🙂","ChatBot");
+            //         this.readOutLoud("Happy to help you.");
+            //     }
+            // }
       })
       .catch((err) => {
           console.log('axios.post err',err);
