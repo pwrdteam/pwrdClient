@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import * as cons from '../const/const'
-import '../css/bootstrap.min.css'
+import * as cons from '../const/const';
+import '../css/bootstrap.min.css';
 //import 'bootstrap';
-import '../css/style.css'
+import '../css/style.css';
 
 class Bot extends Component {
     constructor(props) {
@@ -27,7 +27,8 @@ class Bot extends Component {
         conversation: [],
         conversationMe: [],
         conversationChatBot: [],
-        recognizer: new window.webkitSpeechRecognition()
+        recognizer: new window.webkitSpeechRecognition(),
+        isHappyMsgCnt: 0
     };
     
     }
@@ -39,10 +40,9 @@ class Bot extends Component {
     componentDidMount() {
         this.initializeRecognition();
         setTimeout(() => {
-            // this.setcommonResponse("Hello I am Customer support Bot, type hi and i will respond you.","ChatBot");
-            this.setcommonResponse("🙂 Hello.. How May I Help You.","ChatBot");
-        }, 2000);
-        //this.setcommonResponse("hello i am customer support bot type hi and i will respond you.","ChatBot");
+            this.setcommonResponse("🙂 Hello, How May I Help You.","ChatBot");
+            this.readOutLoud("Hello, How May I Help You.");
+        }, 2000);        
         //console.log('componentDidMount');
     }
     
@@ -215,6 +215,10 @@ class Bot extends Component {
                                     elData += `${k}: ${el[k]}, `;
                                 }
                             }
+                            this.setState((state, props) => ({
+                                ...state,
+                                ...state.isHappyMsgCnt++
+                            }));
                             elData = elData.substr(0,elData.length-2);
                             respText += elData + '\r\n\n';
                         });
@@ -223,16 +227,24 @@ class Bot extends Component {
                     }
                     else{
                         respText += res.data.result.fulfillment.messages[i].speech + '\r\n';
-                    }                    
+                    }
                 }
             }
             else{
                 var respText = !res.data.result.fulfillment.speech?'Please try again.':res.data.result.fulfillment.speech;                
             }
-          this.setcommonResponse(respText,"ChatBot");
-          this.readOutLoud(respText);
-          taResponse.scrollTop = taResponse.scrollHeight;
-          body.scrollTop = body.scrollHeight;
+            this.setcommonResponse(respText,"ChatBot");
+            this.readOutLoud(respText);
+            let MsgCnt = this.state.isHappyMsgCnt;
+            if (MsgCnt != 0) {
+                let isTrue = MsgCnt%4==0;
+                if (isTrue) {
+                    this.setcommonResponse("Happy to help you.🙂","ChatBot");
+                    this.readOutLoud("Happy to help you.");
+                }
+            }
+            taResponse.scrollTop = taResponse.scrollHeight;
+            body.scrollTop = body.scrollHeight;
       })
       .catch((err) => {
           console.log('axios.post err',err);
